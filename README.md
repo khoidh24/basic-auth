@@ -1,5 +1,12 @@
 # This is a basic authentication app 🌿
 
+## Library 📑
+- Fiber
+- MongoDB MGM
+- JWT
+- Bcrypt
+- Scalar
+
 ## How to run 👟
 
 1. Clone this repository
