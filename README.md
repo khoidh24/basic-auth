@@ -1,6 +1,6 @@
-# This is a basic authentication app
+# This is a basic authentication app 🌿
 
-## How to run
+## How to run 👟
 
 1. Clone this repository
 2. Run `go mod download`
