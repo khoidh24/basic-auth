@@ -12,17 +12,26 @@ import (
 func SignUp(c *fiber.Ctx) error {
 	user := new(authModel.User)
 	if err := c.BodyParser(user); err != nil {
-		return c.Status(fiber.StatusBadRequest).SendString("Invalid request")
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"status":  400,
+			"message": "Invalid request",
+		})
 	}
 
 	if user.Password != user.ConfirmPassword {
-		return c.Status(fiber.StatusBadRequest).SendString("Passwords do not match")
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"status":  400,
+			"message": "Passwords do not match",
+		})
 	}
 
 	existing := &authModel.User{}
 	err := mgm.Coll(existing).First(bson.M{"email": user.Email}, existing)
 	if err == nil {
-		return c.Status(fiber.StatusBadRequest).SendString("Email already exists")
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"status":  409,
+			"message": "Email already exists",
+		})
 	}
 
 	hash, _ := bcrypt.GenerateFromPassword([]byte(user.Password), 14)
@@ -30,10 +39,14 @@ func SignUp(c *fiber.Ctx) error {
 	user.IsActive = true
 
 	if err := mgm.Coll(user).Create(user); err != nil {
-		return c.Status(fiber.StatusInternalServerError).SendString("Internal Server Error: Creating user failed")
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"status":  500,
+			"message": "Internal Server Error: Creating user failed",
+		})
 	}
 
 	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
+		"status":  201,
 		"message": "Signup successful",
 	})
 }

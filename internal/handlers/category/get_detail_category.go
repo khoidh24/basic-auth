@@ -1,13 +1,12 @@
 package category
 
 import (
-	auth "leanGo/internal/models/auth"
 	features "leanGo/internal/models/features"
 	"leanGo/internal/services"
+	"leanGo/internal/utils"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/kamva/mgm/v3"
-	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -32,9 +31,8 @@ func GetDetailCategory(c *fiber.Ctx) error {
 	}
 
 	// Get user
-	email := c.Locals("email").(string)
-	user := &auth.User{}
-	if err := mgm.Coll(user).First(bson.M{"email": email}, user); err != nil {
+	user, err := utils.GetUserByEmailFromContext(c)
+	if err != nil {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 			"status":  401,
 			"message": "Unauthorized",

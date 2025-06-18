@@ -11,14 +11,20 @@ func ProtectRoutes() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		tokenString := c.Get("Authorization")
 		if tokenString == "" {
-			return c.Status(fiber.StatusUnauthorized).SendString("Unauthorized - Missing token")
+			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+				"status":  401,
+				"message": "Unauthorized - Missing token",
+			})
 		}
 
 		token, err := jwt.Parse(tokenString, func(t *jwt.Token) (interface{}, error) {
 			return configs.JWTSecret, nil
 		})
 		if err != nil || !token.Valid {
-			return c.Status(fiber.StatusUnauthorized).SendString("Unauthorized - Invalid token")
+			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+				"status":  401,
+				"message": "Unauthorized - Invalid token",
+			})
 		}
 
 		claims := token.Claims.(jwt.MapClaims)
