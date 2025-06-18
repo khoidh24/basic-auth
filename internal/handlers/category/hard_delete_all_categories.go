@@ -23,7 +23,7 @@ func HardDeleteAllCategory(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"status":  500,
-			"message": "Failed to delete categories",
+			"message": "Internal server error",
 		})
 	}
 

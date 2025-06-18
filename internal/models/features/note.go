@@ -10,7 +10,7 @@ type Note struct {
 	Title            string             `json:"noteTitle" bson:"noteTitle"`
 	Content          string             `json:"content" bson:"content"`
 	CoverImage       string             `json:"coverImage" bson:"coverImage"`
-	UserId           primitive.ObjectID `json:"userId" bson:"userId"`
+	UserID           primitive.ObjectID `json:"userId" bson:"userId"`
 	CategoryID       primitive.ObjectID `json:"categoryId" bson:"categoryId"`
 	IsPublic         bool               `json:"isPublic" bson:"isPublic"`
 	IsActive         bool               `json:"isActive" bson:"isActive"`

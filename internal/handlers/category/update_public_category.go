@@ -2,14 +2,13 @@ package category
 
 import (
 	features "leanGo/internal/models/features"
-	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/kamva/mgm/v3"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func UpdateCategoryInfo(c *fiber.Ctx) error {
+func TogglePublicCategory(c *fiber.Ctx) error {
 	// Get ID
 	id := c.Params("id")
 	objID, err := primitive.ObjectIDFromHex(id)
@@ -29,10 +28,9 @@ func UpdateCategoryInfo(c *fiber.Ctx) error {
 		})
 	}
 
-	// Get request body
+	// Get isPublic from body
 	type Body struct {
-		Name        string `json:"name"`
-		Description string `json:"description"`
+		IsPublic bool `json:"isPublic"`
 	}
 	var body Body
 	if err := c.BodyParser(&body); err != nil {
@@ -42,12 +40,8 @@ func UpdateCategoryInfo(c *fiber.Ctx) error {
 		})
 	}
 
-	// Update category
-	if body.Name != "" {
-		category.Name = body.Name
-	}
-	category.Description = body.Description
-	category.UpdatedAt = time.Now().UTC()
+	// Update public status
+	category.IsPublic = body.IsPublic
 	if err := mgm.Coll(category).Update(category); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"status":  500,
@@ -58,6 +52,6 @@ func UpdateCategoryInfo(c *fiber.Ctx) error {
 	// Return response
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"status":  200,
-		"message": "Category updated successfully",
+		"message": "Category public state updated",
 	})
 }

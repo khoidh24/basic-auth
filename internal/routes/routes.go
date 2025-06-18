@@ -1,3 +1,4 @@
+// /routes/routes.go
 package routes
 
 import (
@@ -15,8 +16,9 @@ func Routes(app *fiber.App) {
 	v1.Post("/signup", auth.SignUp)
 	v1.Post("/login", auth.Login)
 
-	// Category Routes
+	// Category + Note Routes
 	features.RegisterCategoryRoutes(v1)
+	features.RegisterNoteRoutes(v1)
 
 	// Swagger Docs
 	v1.Get("/swagger.json", docs.SwaggerJSON)

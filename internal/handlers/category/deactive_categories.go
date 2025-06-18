@@ -47,7 +47,7 @@ func DeactiveManyCategory(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"status":  500,
-			"message": "Failed to update categories",
+			"message": "Internal server error",
 		})
 	}
 
