@@ -49,7 +49,7 @@ func GetDetailCategory(c *fiber.Ctx) error {
 		}
 		userID = user.ID
 	} else {
-		// Nếu là public → dùng luôn UserID từ category để lọc notes
+		// If public category, use category.UserID
 		userID = category.UserID
 	}
 
