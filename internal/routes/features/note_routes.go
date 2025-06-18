@@ -20,6 +20,6 @@ func RegisterNoteRoutes(router fiber.Router) {
 	protected.Put("/:id/status", note.ToggleActiveNote)
 	protected.Put("/:id/change-category", note.ChangeNoteCategory)
 	protected.Put("/:id", note.UpdateNote)
-	protected.Put("/deactivate", note.SoftDeleteManyNotes)
+	protected.Put("/status-notes", note.ToggleActiveNotes)
 	protected.Put("/:id/public", note.TogglePublicNote)
 }

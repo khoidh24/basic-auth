@@ -9,51 +9,55 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func DeactiveManyCategory(c *fiber.Ctx) error {
+func ToggleActiveCategories(c *fiber.Ctx) error {
 	// Parse request body
 	var payload struct {
-		Ids []string `json:"ids"`
+		Ids      []string `json:"ids"`
+		IsActive bool     `json:"isActive"` // Value to apply
 	}
-	if err := c.BodyParser(&payload); err != nil {
+	if err := c.BodyParser(&payload); err != nil || len(payload.Ids) == 0 {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"status":  400,
-			"message": "Invalid request",
+			"message": "Invalid request or missing IDs",
 		})
 	}
 
 	// Convert IDs to ObjectID
-	objIDs := make([]primitive.ObjectID, 0)
-	invalidIDs := 0
+	objIDs := make([]primitive.ObjectID, 0, len(payload.Ids))
 	for _, id := range payload.Ids {
 		if objID, err := primitive.ObjectIDFromHex(id); err == nil {
 			objIDs = append(objIDs, objID)
-		} else {
-			invalidIDs++
 		}
 	}
 
-	// Check if there are any valid IDs
 	if len(objIDs) == 0 {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"status":  400,
-			"message": "No valid IDs provided",
+			"message": "No valid category IDs provided",
 		})
 	}
 
-	// Update categories
-	_, err := mgm.Coll(&features.Category{}).UpdateMany(c.Context(),
-		bson.M{"_id": bson.M{"$in": objIDs}},
-		bson.M{"$set": bson.M{"isActive": false}})
+	// Perform update
+	update := bson.M{
+		"$set": bson.M{
+			"isActive": payload.IsActive,
+		},
+	}
+
+	res, err := mgm.Coll(&features.Category{}).UpdateMany(c.Context(),
+		bson.M{"_id": bson.M{"$in": objIDs}}, update)
+
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"status":  500,
-			"message": "Internal server error",
+			"message": "Failed to update categories",
 		})
 	}
 
 	// Return response
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"status":  200,
-		"message": "Update categories successfully",
+		"status":       200,
+		"message":      "Categories updated successfully",
+		"updatedCount": res.ModifiedCount,
 	})
 }

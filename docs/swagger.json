@@ -491,12 +491,12 @@
         }
       }
     },
-    "/category/deactivate": {
+    "/category/status-categories": {
       "put": {
         "tags": [
           "Category"
         ],
-        "summary": "Deactivate (soft delete) multiple categories",
+        "summary": "Toggle active status of multiple categories",
         "security": [
           {
             "bearerAuth": []
@@ -522,7 +522,7 @@
         },
         "responses": {
           "200": {
-            "description": "Categories deactivated"
+            "description": "Categories status updated"
           }
         }
       }
@@ -530,7 +530,7 @@
     "/category/force": {
       "delete": {
         "tags": [
-          "Category"
+          "User Settings"
         ],
         "summary": "Hard delete selected categories",
         "security": [
@@ -566,7 +566,7 @@
     "/category/force/all": {
       "delete": {
         "tags": [
-          "Category"
+          "User Settings"
         ],
         "summary": "Hard delete all categories of user",
         "security": [
@@ -877,42 +877,10 @@
         }
       }
     },
-    "/note/force/{id}": {
-      "delete": {
-        "tags": [
-          "Note"
-        ],
-        "summary": "Hard delete a note by ID",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "description": "Note ID",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Note deleted permanently"
-          },
-          "404": {
-            "description": "Note not found"
-          }
-        }
-      }
-    },
     "/note/force/notes": {
       "delete": {
         "tags": [
-          "Note"
+          "User Settings"
         ],
         "summary": "Hard delete multiple notes",
         "security": [
@@ -1031,12 +999,12 @@
         }
       }
     },
-    "/note/deactivate": {
+    "/note/status-notes": {
       "put": {
         "tags": [
           "Note"
         ],
-        "summary": "Soft delete multiple notes",
+        "summary": "Toggle active status of multiple notes",
         "security": [
           {
             "bearerAuth": []

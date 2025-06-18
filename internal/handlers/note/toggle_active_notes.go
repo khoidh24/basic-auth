@@ -2,7 +2,6 @@ package note
 
 import (
 	features "leanGo/internal/models/features"
-
 	"leanGo/internal/utils"
 
 	"github.com/gofiber/fiber/v2"
@@ -11,12 +10,13 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-var body struct {
-	IDs []string `json:"ids"`
-}
+func ToggleActiveNotes(c *fiber.Ctx) error {
+	type RequestBody struct {
+		IDs      []string `json:"ids"`
+		IsActive bool     `json:"isActive"` // Used for both soft delete and restore
+	}
 
-func SoftDeleteManyNotes(c *fiber.Ctx) error {
-	// Check if the request body is valid
+	var body RequestBody
 	if err := c.BodyParser(&body); err != nil || len(body.IDs) == 0 {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"status":  400,
@@ -24,7 +24,7 @@ func SoftDeleteManyNotes(c *fiber.Ctx) error {
 		})
 	}
 
-	// Check if the user is authenticated
+	// Get authenticated user
 	user, err := utils.GetUserByEmailFromContext(c)
 	if err != nil {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
@@ -34,39 +34,46 @@ func SoftDeleteManyNotes(c *fiber.Ctx) error {
 	}
 
 	// Convert string IDs to ObjectIDs
-	objectIDs := []primitive.ObjectID{}
+	objectIDs := make([]primitive.ObjectID, 0, len(body.IDs))
 	for _, id := range body.IDs {
-		objID, convertObjectIdErr := primitive.ObjectIDFromHex(id)
-		if convertObjectIdErr == nil {
+		objID, convertErr := primitive.ObjectIDFromHex(id)
+		if convertErr == nil {
 			objectIDs = append(objectIDs, objID)
 		}
 	}
 
-	// Check if the notes exist and belong to the user
+	if len(objectIDs) == 0 {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"status":  400,
+			"message": "No valid note IDs provided",
+		})
+	}
+
+	// Filter notes by ownership and target IDs
 	filter := bson.M{
-		"_id":      bson.M{"$in": objectIDs},
-		"userId":   user.ID,
-		"isActive": true,
+		"_id":    bson.M{"$in": objectIDs},
+		"userId": user.ID,
 	}
 
-	// Soft delete the notes
+	// Update isActive according to request
 	update := bson.M{
-		"$set": bson.M{"isActive": false},
+		"$set": bson.M{
+			"isActive": body.IsActive,
+		},
 	}
 
-	// Perform the update
+	// Perform update
 	res, err := mgm.Coll(&features.Note{}).UpdateMany(c.Context(), filter, update)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"status":  500,
-			"message": "Internal server error",
+			"message": "Failed to update notes",
 		})
 	}
 
-	// Return response
-	return c.JSON(fiber.Map{
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"status":       200,
-		"message":      "Notes soft deleted",
-		"deletedCount": res.ModifiedCount,
+		"message":      "Notes updated successfully",
+		"updatedCount": res.ModifiedCount,
 	})
 }
