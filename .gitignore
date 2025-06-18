@@ -1,0 +1,42 @@
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool
+*.out
+
+# Dependency directories (if using Go modules)
+vendor/
+
+# Go workspace file (Go 1.18+)
+go.work
+go.work.sum
+
+# IDE/editor settings
+.vscode/
+.idea/
+*.swp
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Env files
+.env
+.env.*  # matches .env.development, .env.local, etc.
+
+# Log files
+*.log
+
+# Build output (you may adjust this if using different build folder)
+bin/
+build/
+
+# Optional: exclude compiled protobufs or other generated code
+*.pb.go
