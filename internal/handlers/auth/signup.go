@@ -1,7 +1,7 @@
 package auth
 
 import (
-	"leanGo/internal/models"
+	authModel "leanGo/internal/models/auth"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/kamva/mgm/v3"
@@ -10,7 +10,7 @@ import (
 )
 
 func SignUp(c *fiber.Ctx) error {
-	user := new(models.User)
+	user := new(authModel.User)
 	if err := c.BodyParser(user); err != nil {
 		return c.Status(fiber.StatusBadRequest).SendString("Invalid request")
 	}
@@ -19,7 +19,7 @@ func SignUp(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).SendString("Passwords do not match")
 	}
 
-	existing := &models.User{}
+	existing := &authModel.User{}
 	err := mgm.Coll(existing).First(bson.M{"email": user.Email}, existing)
 	if err == nil {
 		return c.Status(fiber.StatusBadRequest).SendString("Email already exists")

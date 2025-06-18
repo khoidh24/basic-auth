@@ -22,7 +22,7 @@ func ProtectRoutes() fiber.Handler {
 		}
 
 		claims := token.Claims.(jwt.MapClaims)
-		c.Locals("username", claims["name"])
+		c.Locals("email", claims["email"])
 		return c.Next()
 	}
 }

@@ -2,7 +2,7 @@ package auth
 
 import (
 	configs "leanGo/config"
-	"leanGo/internal/models"
+	authModel "leanGo/internal/models/auth"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -13,12 +13,12 @@ import (
 )
 
 func Login(c *fiber.Ctx) error {
-	req := new(models.User)
+	req := new(authModel.User)
 	if err := c.BodyParser(req); err != nil {
 		return c.Status(fiber.StatusBadRequest).SendString("Invalid login")
 	}
 
-	user := &models.User{}
+	user := &authModel.User{}
 	err := mgm.Coll(user).First(bson.M{"email": req.Email}, user)
 	if err != nil {
 		return c.Status(fiber.StatusUnauthorized).SendString("Wrong email or password")
@@ -29,9 +29,9 @@ func Login(c *fiber.Ctx) error {
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"id":   user.ID.Hex(),
-		"name": user.Name,
-		"exp":  time.Now().Add(time.Hour * 72).Unix(),
+		"id":    user.ID.Hex(),
+		"email": user.Email,
+		"exp":   time.Now().Add(time.Hour * 72).Unix(),
 	})
 	t, err := token.SignedString(configs.JWTSecret)
 	if err != nil {
