@@ -23,7 +23,7 @@ func GetDetailCategory(c *fiber.Ctx) error {
 
 	// Find category by ID
 	category := &features.Category{}
-	if err := mgm.Coll(category).FindByID(objID, category); err != nil || !category.IsActive {
+	if notFoundCategoryErr := mgm.Coll(category).FindByID(objID, category); notFoundCategoryErr != nil || !category.IsActive {
 		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
 			"status":  404,
 			"message": "Category not found",
