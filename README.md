@@ -1,24 +1,52 @@
-# This is a basic authentication app 🌿
+# 🌿 Basic Authentication App
 
-## Library 📑
+A simple and clean authentication system using Go Fiber and MongoDB.
 
-- Fiber
-- MongoDB MGM
-- JWT
-- Bcrypt
-- Scalar
+---
 
-## How to run 👟
+## 📚 Tech Stack
 
-1. Clone this repository
-2. Run `go mod download`
-3. Run `go run cmd/main.go`
+- ⚡ [Fiber](https://gofiber.io/) — Fast HTTP web framework
+- 🍃 [MongoDB + MGM](https://github.com/kamva/mgm) — ODM for MongoDB
+- 🔐 [JWT](https://jwt.io/) — Secure authentication
+- 🔒 [Bcrypt](https://pkg.go.dev/golang.org/x/crypto/bcrypt) — Password hashing
+- 📘 [Scalar](https://scalar.com/) — API documentation tool
 
-Tada! The app will run on `localhost:3000` 🎉
+---
 
-## API Document 📚
+## 🚀 Getting Started
 
-- You can register a new user by visiting `localhost:3000/api/v1/users/register`
-- You can login by visiting `localhost:3000/api/v1/users/login`
-- You can get all categories by visiting `localhost:3000/api/v1/category`
-- You can get API Document by visiting `localhost:3000/api/v1/reference`
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/your-repo/auth-app.git
+cd auth-app
+```
+
+### 2. Install dependencies
+
+```bash
+go mod download
+```
+
+### 3. Set up environment variables
+
+Create a `.env` file in the root directory and add the following:
+
+```env
+PORT=3000
+MONGODB_URI=your-mongodb-uri
+JWT_SECRET=your-jwt-secret
+```
+
+### 4. Run the application
+
+```bash
+go run cmd/main.go
+```
+
+The app will run on `localhost:3000`. You can now register, login, and manage users.
+
+### 5. API Documentation
+
+The API documentation is generated using Scalar. You can access it at `localhost:3000/api/v1/reference`.
