@@ -40,6 +40,7 @@ func CreateCategory(c *fiber.Ctx) error {
 		UserID:      user.ID,
 		IsActive:    true,
 		NoteIDs:     []primitive.ObjectID{},
+		IsPublic:    false,
 	}
 
 	if err := mgm.Coll(category).Create(category); err != nil {

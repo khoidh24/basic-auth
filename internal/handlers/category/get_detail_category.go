@@ -21,7 +21,7 @@ func GetDetailCategory(c *fiber.Ctx) error {
 		})
 	}
 
-	// Find category by ID
+	// Find category
 	category := &features.Category{}
 	if notFoundCategoryErr := mgm.Coll(category).FindByID(objID, category); notFoundCategoryErr != nil || !category.IsActive {
 		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
@@ -30,24 +30,30 @@ func GetDetailCategory(c *fiber.Ctx) error {
 		})
 	}
 
-	// Get user
-	user, err := utils.GetUserByEmailFromContext(c)
-	if err != nil {
-		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-			"status":  401,
-			"message": "Unauthorized",
-		})
+	var userID primitive.ObjectID
+
+	// Check if category is public
+	if !category.IsPublic {
+		user, publicCategoryErr := utils.GetUserByEmailFromContext(c)
+		if publicCategoryErr != nil {
+			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+				"status":  401,
+				"message": "Unauthorized - Private category",
+			})
+		}
+		if category.UserID != user.ID {
+			return c.Status(fiber.StatusForbidden).JSON(fiber.Map{
+				"status":  403,
+				"message": "Forbidden - Not the owner",
+			})
+		}
+		userID = user.ID
+	} else {
+		// Nếu là public → dùng luôn UserID từ category để lọc notes
+		userID = category.UserID
 	}
 
-	// Check ownership
-	if category.UserID != user.ID {
-		return c.Status(fiber.StatusForbidden).JSON(fiber.Map{
-			"status":  403,
-			"message": "Forbidden",
-		})
-	}
-
-	// Build filters from query
+	// Build filters
 	result, err := services.FilterBuilder(c, services.FilterOptions{
 		DefaultLimit: 10,
 		AllowSortBy:  []string{"createdAt", "name"},
@@ -58,7 +64,7 @@ func GetDetailCategory(c *fiber.Ctx) error {
 	}
 
 	// Filter by user + category
-	result.Filter["userId"] = user.ID
+	result.Filter["userId"] = userID
 	result.Filter["categoryId"] = category.ID
 
 	// Count notes
@@ -70,7 +76,7 @@ func GetDetailCategory(c *fiber.Ctx) error {
 		})
 	}
 
-	// Find notes
+	// Fetch notes
 	cursor, err := mgm.Coll(&features.Note{}).Find(c.Context(), result.Filter, result.FindOpts)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
