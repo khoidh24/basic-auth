@@ -16,10 +16,6 @@
       "description": "Manage user authentication"
     },
     {
-      "name": "Home",
-      "description": "Manage user home information"
-    },
-    {
       "name": "Category",
       "description": "Manage categories for notes"
     }
@@ -82,21 +78,6 @@
           },
           "401": {
             "description": "Invalid email or password"
-          }
-        }
-      }
-    },
-    "/home": {
-      "get": {
-        "tags": ["Home"],
-        "summary": "Get user home information",
-        "security": [{ "bearerAuth": [] }],
-        "responses": {
-          "200": {
-            "description": "Return user information"
-          },
-          "401": {
-            "description": "Unauthorized"
           }
         }
       }

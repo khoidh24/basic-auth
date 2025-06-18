@@ -8,7 +8,7 @@ import (
 )
 
 func RegisterCategoryRoutes(router fiber.Router) {
-	group := router.Group("/", middleware.ProtectRoutes())
+	group := router.Group("/category", middleware.ProtectRoutes())
 
 	group.Get("/", category.GetAllCategory)
 	group.Get("/:id", category.GetDetailCategory)

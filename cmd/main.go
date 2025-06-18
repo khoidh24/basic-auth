@@ -1,10 +1,13 @@
 package main
 
 import (
+	"fmt"
+	"log"
+
 	configs "leanGo/config"
 	"leanGo/internal/database"
 	"leanGo/internal/routes"
-	"log"
+	"leanGo/internal/utils"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -21,6 +24,12 @@ func main() {
 	// Routes
 	routes.Routes(app)
 
-	app.Listen(":" + configs.Port)
-	log.Printf("Server listening on http://localhost:%s", configs.Port)
+	// Start server with dynamic port handling
+	startPort := utils.GetInitialPort(configs.Port)
+	finalPort := utils.FindAvailablePort(startPort)
+
+	log.Printf("Server starting on http://localhost:%d", finalPort)
+	if err := app.Listen(fmt.Sprintf(":%d", finalPort)); err != nil {
+		log.Fatalf("Failed to start server: %v", err)
+	}
 }
