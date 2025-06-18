@@ -6,35 +6,53 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/kamva/mgm/v3"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func CreateCategory(c *fiber.Ctx) error {
+type CreateCategoryRequest struct {
+	Name        string `json:"categoryName"`
+	Description string `json:"description"`
+}
 
+func CreateCategory(c *fiber.Ctx) error {
+	// Auth
 	user, err := utils.GetUserByEmailFromContext(c)
 	if err != nil {
-		return c.Status(fiber.StatusUnauthorized).SendString("Unauthorized")
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			"status":  401,
+			"message": "Unauthorized",
+		})
 	}
 
-	var body models.Category
-	if err := c.BodyParser(&body); err != nil {
+	// Parse body
+	var req CreateCategoryRequest
+	if err := c.BodyParser(&req); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"status":  400,
-			"message": "Invalid request",
+			"message": "Invalid request body",
 		})
 	}
 
-	body.UserID = user.ID
-	body.IsActive = true
+	// Create Category
+	category := &models.Category{
+		Name:        req.Name,
+		Description: req.Description,
+		UserID:      user.ID,
+		IsActive:    true,
+		NoteIDs:     []primitive.ObjectID{},
+	}
 
-	if err := mgm.Coll(&body).Create(&body); err != nil {
+	if err := mgm.Coll(category).Create(category); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"status":  500,
-			"message": "Internal Server Error: Creating category failed",
+			"message": "Failed to create category",
 		})
 	}
 
+	// Success
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"status":  200,
 		"message": "Category created successfully",
+		"data":    category,
 	})
 }

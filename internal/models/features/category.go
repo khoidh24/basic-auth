@@ -7,8 +7,9 @@ import (
 
 type Category struct {
 	mgm.DefaultModel `bson:",inline"`
-	Name             string             `json:"categoryName" bson:"categoryName"`
-	Description      string             `json:"description" bson:"description"`
-	UserID           primitive.ObjectID `json:"userId" bson:"userId"`
-	IsActive         bool               `json:"isActive" bson:"isActive"`
+	Name             string               `json:"categoryName" bson:"categoryName"`
+	Description      string               `json:"description" bson:"description"`
+	UserID           primitive.ObjectID   `json:"userId" bson:"userId"`
+	NoteIDs          []primitive.ObjectID `json:"noteIds" bson:"noteIds"`
+	IsActive         bool                 `json:"isActive" bson:"isActive"`
 }
