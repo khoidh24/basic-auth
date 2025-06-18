@@ -15,10 +15,11 @@ func RegisterNoteRoutes(router fiber.Router) {
 
 	// Protected routes
 	protected := group.Use(middleware.ProtectRoutes())
-	protected.Delete("/force/:id", note.HardDeleteNote)
-	protected.Delete("/force/notes", note.HardDeleteManyNotes)
+	protected.Post("/", note.CreateNote)
+	protected.Delete("/force", note.HardDeleteManyNotes)
 	protected.Put("/:id/status", note.ToggleActiveNote)
 	protected.Put("/:id/change-category", note.ChangeNoteCategory)
 	protected.Put("/:id", note.UpdateNote)
+	protected.Put("/deactivate", note.SoftDeleteManyNotes)
 	protected.Put("/:id/public", note.TogglePublicNote)
 }
