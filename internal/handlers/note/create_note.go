@@ -29,7 +29,7 @@ func CreateNote(c *fiber.Ctx) error {
 	}
 
 	var body Body
-	if err := c.BodyParser(&body); err != nil {
+	if reqErr := c.BodyParser(&body); reqErr != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"status":  400,
 			"message": "Invalid request",
