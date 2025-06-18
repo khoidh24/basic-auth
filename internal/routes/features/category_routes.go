@@ -12,6 +12,7 @@ func RegisterCategoryRoutes(router fiber.Router) {
 
 	group.Get("/", category.GetAllCategory)
 	group.Get("/:id", category.GetDetailCategory)
+	group.Post("/", category.CreateCategory)
 	group.Put("/:id", category.UpdateCategory)
 	group.Patch("/deactivate", category.DeactiveManyCategory)
 	group.Delete("/force", category.HardDeleteManyCategory)
