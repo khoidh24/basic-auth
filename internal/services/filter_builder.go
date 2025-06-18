@@ -49,6 +49,20 @@ func FilterBuilder(c *fiber.Ctx, otps FilterOptions) (FilterResult, error) {
 		}
 	}
 
+	// Add isActive filter
+	isActiveStr := c.Query("isActive", "")
+	if isActiveStr != "" {
+		isActive, err := strconv.ParseBool(isActiveStr)
+		if err != nil {
+			return FilterResult{},
+				fiber.NewError(fiber.StatusBadRequest, "Invalid request")
+		}
+		filter["isActive"] = isActive
+	} else {
+		// Default: only show active items
+		filter["isActive"] = true
+	}
+
 	// Sort logic
 	sortField := c.Query("sortBy", "createdAt")
 	sortOrderStr := strings.ToLower(c.Query("sortOrder", "desc")) // default is "desc"

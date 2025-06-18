@@ -26,15 +26,11 @@ func GetAllCategory(c *fiber.Ctx) error {
 		ExtraFilters: map[string]string{}, // can be extended later
 	})
 	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"status":  500,
-			"message": "Failed to parse filters",
-		})
+		return utils.HandleFilterError(c, err, "Failed to parse filters")
 	}
 
 	// Add filter by user
 	result.Filter["userId"] = user.ID
-	result.Filter["isActive"] = true
 
 	// Total documents
 	total, err := mgm.Coll(&features.Category{}).CountDocuments(c.Context(), result.Filter)

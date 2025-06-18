@@ -39,7 +39,7 @@ func GetDetailCategory(c *fiber.Ctx) error {
 		})
 	}
 
-	// Check permission
+	// Check ownership
 	if category.UserID != user.ID {
 		return c.Status(fiber.StatusForbidden).JSON(fiber.Map{
 			"status":  403,
@@ -54,16 +54,12 @@ func GetDetailCategory(c *fiber.Ctx) error {
 		ExtraFilters: map[string]string{},
 	})
 	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"status":  500,
-			"message": "Failed to parse filters",
-		})
+		return utils.HandleFilterError(c, err, "Failed to parse filters")
 	}
 
-	// Append ownership + category scope
+	// Filter by user + category
 	result.Filter["userId"] = user.ID
 	result.Filter["categoryId"] = category.ID
-	result.Filter["isActive"] = true
 
 	// Count notes
 	total, err := mgm.Coll(&features.Note{}).CountDocuments(c.Context(), result.Filter)
@@ -92,7 +88,6 @@ func GetDetailCategory(c *fiber.Ctx) error {
 		})
 	}
 
-	// Return response
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"status": 200,
 		"metadata": fiber.Map{

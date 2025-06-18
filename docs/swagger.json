@@ -18,6 +18,10 @@
     {
       "name": "Category",
       "description": "Manage categories for notes"
+    },
+    {
+      "name": "User Settings",
+      "description": "Manage user settings"
     }
   ],
   "paths": {
@@ -639,7 +643,7 @@
     },
     "/category/force-delete-all": {
       "delete": {
-        "tags": ["Category"],
+        "tags": ["User Settings"],
         "summary": "Hard delete all categories",
         "security": [{ "bearerAuth": [] }],
         "responses": {
