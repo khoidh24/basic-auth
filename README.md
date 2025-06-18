@@ -34,6 +34,7 @@ go mod download
 Create a `.env` file in the root directory and add the following:
 
 ```env
+DOMAIN=your-domain
 PORT=3000
 MONGODB_URI=your-mongodb-uri
 JWT_SECRET=your-jwt-secret
