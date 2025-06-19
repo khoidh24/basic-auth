@@ -11,7 +11,7 @@ func RegisterNoteRoutes(router fiber.Router) {
 	group := router.Group("/note")
 
 	// Publicly accessible
-	group.Get("/:id", note.GetNoteDetail)
+	group.Get("/:id", middleware.OptionalJWT(), note.GetNoteDetail)
 
 	// Protected routes
 	protected := group.Use(middleware.ProtectRoutes())

@@ -11,6 +11,7 @@ var (
 	Port      string = "3000"
 	Domain    string = "http://localhost"
 	JWTSecret string
+	DBName    string = "habify"
 )
 
 func LoadConfig() {
@@ -19,4 +20,5 @@ func LoadConfig() {
 	Port = os.Getenv("PORT")
 	Domain = os.Getenv("DOMAIN")
 	JWTSecret = os.Getenv("JWT_SECRET")
+	DBName = os.Getenv("DB_NAME")
 }

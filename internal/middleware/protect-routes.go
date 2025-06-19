@@ -17,9 +17,19 @@ func ProtectRoutes() fiber.Handler {
 			})
 		}
 
+		// Remove "Bearer " prefix if present
+		if len(tokenString) > 7 && tokenString[:7] == "Bearer " {
+			tokenString = tokenString[7:]
+		}
+
 		token, err := jwt.Parse(tokenString, func(t *jwt.Token) (interface{}, error) {
-			return configs.JWTSecret, nil
+			// Check for correct signing method
+			if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
+				return nil, fiber.NewError(fiber.StatusUnauthorized, "Unexpected signing method")
+			}
+			return []byte(configs.JWTSecret), nil
 		})
+
 		if err != nil || !token.Valid {
 			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 				"status":  401,
@@ -27,8 +37,36 @@ func ProtectRoutes() fiber.Handler {
 			})
 		}
 
-		claims := token.Claims.(jwt.MapClaims)
+		claims, ok := token.Claims.(jwt.MapClaims)
+		if !ok {
+			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+				"status":  401,
+				"message": "Unauthorized - Invalid claims",
+			})
+		}
+
 		c.Locals("email", claims["email"])
+		return c.Next()
+	}
+}
+
+func OptionalJWT() fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		tokenString := c.Get("Authorization")
+		if tokenString != "" && len(tokenString) > 7 && tokenString[:7] == "Bearer " {
+			tokenString = tokenString[7:]
+			token, err := jwt.Parse(tokenString, func(t *jwt.Token) (interface{}, error) {
+				if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
+					return nil, fiber.NewError(fiber.StatusUnauthorized, "Unexpected signing method")
+				}
+				return []byte(configs.JWTSecret), nil
+			})
+			if err == nil && token.Valid {
+				if claims, ok := token.Claims.(jwt.MapClaims); ok {
+					c.Locals("email", claims["email"])
+				}
+			}
+		}
 		return c.Next()
 	}
 }

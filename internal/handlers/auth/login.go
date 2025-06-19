@@ -42,7 +42,7 @@ func Login(c *fiber.Ctx) error {
 		"email": user.Email,
 		"exp":   time.Now().Add(time.Hour * 72).Unix(),
 	})
-	t, err := token.SignedString(configs.JWTSecret)
+	t, err := token.SignedString([]byte(configs.JWTSecret))
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"status":  500,

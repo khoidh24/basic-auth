@@ -31,7 +31,7 @@ func UpdateCategoryInfo(c *fiber.Ctx) error {
 
 	// Get request body
 	type Body struct {
-		Name        string `json:"name"`
+		Name        string `json:"categoryName"`
 		Description string `json:"description"`
 	}
 	var body Body

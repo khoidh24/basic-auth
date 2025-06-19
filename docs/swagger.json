@@ -29,6 +29,13 @@
     }
   ],
   "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
     "schemas": {
       "UserSignup": {
         "type": "object",
@@ -402,7 +409,7 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "title": {
+                  "categoryName": {
                     "type": "string"
                   },
                   "description": {
@@ -467,7 +474,7 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "title": {
+                  "categoryName": {
                     "type": "string"
                   },
                   "description": {
@@ -701,12 +708,6 @@
                   },
                   "CategoryID": {
                     "type": "string"
-                  },
-                  "isPublic": {
-                    "type": "boolean"
-                  },
-                  "isActive": {
-                    "type": "boolean"
                   }
                 }
               }
@@ -877,7 +878,7 @@
         }
       }
     },
-    "/note/force/notes": {
+    "/note/force": {
       "delete": {
         "tags": [
           "User Settings"
@@ -895,7 +896,7 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "noteIds": {
+                  "ids": {
                     "type": "array",
                     "items": {
                       "type": "string"

@@ -12,7 +12,7 @@ func RegisterCategoryRoutes(router fiber.Router) {
 	group := router.Group("/category")
 
 	// Public route (public detail without auth)
-	group.Get("/:id", category.GetDetailCategory)
+	group.Get("/:id", middleware.OptionalJWT(), category.GetDetailCategory)
 
 	// Protected routes
 	protected := group.Use(middleware.ProtectRoutes())

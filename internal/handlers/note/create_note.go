@@ -25,7 +25,6 @@ func CreateNote(c *fiber.Ctx) error {
 		Content    string `json:"content"`
 		CoverImage string `json:"coverImage"`
 		CategoryID string `json:"categoryId"`
-		IsPublic   bool   `json:"isPublic"`
 	}
 
 	var body Body
@@ -53,6 +52,15 @@ func CreateNote(c *fiber.Ctx) error {
 		})
 	}
 
+	// Find the category
+	category := &features.Category{}
+	if err := mgm.Coll(category).FindByID(categoryObjID, category); err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"status":  500,
+			"message": "Failed to find category",
+		})
+	}
+
 	// Create new note instance
 	newNote := &features.Note{
 		Title:      body.Title,
@@ -60,7 +68,7 @@ func CreateNote(c *fiber.Ctx) error {
 		CoverImage: body.CoverImage,
 		UserID:     user.ID,
 		CategoryID: categoryObjID,
-		IsPublic:   body.IsPublic,
+		IsPublic:   false,
 		IsActive:   true,
 	}
 
@@ -69,6 +77,17 @@ func CreateNote(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"status":  500,
 			"message": "Internal server error",
+		})
+	}
+
+	// Append newNote.ID to category.NoteIDs if not exists
+	category.NoteIDs = append(category.NoteIDs, newNote.ID)
+
+	// Update the category
+	if err := mgm.Coll(category).Update(category); err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"status":  500,
+			"message": "Failed to update category",
 		})
 	}
 
